@@ -1,0 +1,67 @@
+/* client/src/pages/CreateBlogPage.css */
+.create-blog-page {
+    max-width: 800px;
+    /* Uses .container class for centering/padding */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.create-blog-page h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in element's total width/height */
+    font-size: 1rem;
+}
+
+.form-group input[type="file"] {
+    padding: 10px 0;
+}
+
+.form-group textarea {
+    resize: vertical; /* Allow vertical resize */
+    min-height: 150px;
+}
+
+.form-group select:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.create-blog-page button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    margin-top: 20px;
+}
+
+.error-message {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+} 

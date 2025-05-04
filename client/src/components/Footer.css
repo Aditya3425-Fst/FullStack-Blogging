@@ -1,0 +1,9 @@
+/* client/src/components/Footer.css */
+.footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px; /* Add space above the footer */
+    background-color: #e9ecef;
+    color: #6c757d;
+    border-top: 1px solid #dee2e6;
+} 

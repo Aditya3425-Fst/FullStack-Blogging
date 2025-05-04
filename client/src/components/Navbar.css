@@ -1,0 +1,58 @@
+/* client/src/components/Navbar.css */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky; /* Make navbar sticky */
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+.navbar-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-links li {
+    margin-left: 20px;
+}
+
+.navbar-links a {
+    text-decoration: none;
+    color: #333;
+}
+
+.navbar-links a:hover {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.navbar-username {
+    font-weight: bold;
+    color: #555;
+}
+
+.logout-button {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+} 
