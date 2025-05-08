@@ -15,7 +15,73 @@ function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState({});
   const [profilePicFile, setProfilePicFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Default avatar as SVG data URL - completely self-contained
+  const defaultAvatar = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Crect width='150' height='150' fill='%233182ce' /%3E%3Ccircle cx='75' cy='55' r='30' fill='%23fff' /%3E%3Cpath d='M35,120 C35,85 115,85 115,120 Z' fill='%23fff' /%3E%3C/svg%3E";
+
+  // Check for dark mode and apply fixes
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDark = document.body.classList.contains('dark-mode');
+      setIsDarkMode(isDark);
+      
+      // Apply emergency styles to all form inputs when in edit mode
+      if (isDark && isEditing) {
+        const formInputs = document.querySelectorAll('.profile-edit-form input, .profile-edit-form textarea');
+        formInputs.forEach(input => {
+          input.style.backgroundColor = '#2c2c2c';
+          input.style.color = '#ffffff';
+          input.style.borderColor = '#444';
+        });
+      }
+    };
+    
+    // Check on mount and when editing state changes
+    checkDarkMode();
+    
+    // Set up observer for changes to body class
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, [isEditing]);
+
+  // Fixed styles for dark mode
+  const forcedInputStyle = {
+    backgroundColor: isDarkMode ? '#2c2c2c' : '#ffffff',
+    color: isDarkMode ? '#ffffff' : '#333333',
+    borderColor: isDarkMode ? '#444' : '#ddd',
+    caretColor: isDarkMode ? '#ffffff' : 'auto'
+  };
+
+  // Add emergency styles to head
+  useEffect(() => {
+    if (!isEditing) return; // Only add when editing
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .dark-mode .profile-edit-form input, 
+      .dark-mode .profile-edit-form textarea, 
+      .dark-mode .profile-edit-form select {
+        background-color: #2c2c2c !important;
+        color: #ffffff !important;
+        border-color: #444 !important;
+        caret-color: #ffffff !important;
+      }
+      
+      .dark-mode .profile-edit-form label {
+        color: #ffffff !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, [isEditing]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -63,8 +129,10 @@ function ProfilePage() {
 
   const handleEditToggle = () => {
       setIsEditing(!isEditing);
-      // Reset file input if cancelling edit
-      if (isEditing) setProfilePicFile(null); 
+      if (isEditing) {
+        setProfilePicFile(null);
+        setImagePreview(null);
+      }
   };
 
   const handleInputChange = (e) => {
@@ -74,7 +142,15 @@ function ProfilePage() {
 
   const handleFileChange = (e) => {
       if (e.target.files && e.target.files[0]) {
-          setProfilePicFile(e.target.files[0]);
+          const file = e.target.files[0];
+          setProfilePicFile(file);
+          
+          // Create preview
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setImagePreview(reader.result);
+          };
+          reader.readAsDataURL(file);
       }
   };
 
@@ -104,7 +180,19 @@ function ProfilePage() {
           updateAuthContext({ ...loggedInUser, ...updatedUser }); 
           setIsEditing(false); // Exit edit mode
           setProfilePicFile(null); // Clear file input state
-          alert('Profile updated successfully!');
+          setImagePreview(null);
+          
+          // Show success message
+          const successMessage = document.createElement('div');
+          successMessage.className = 'success-message';
+          successMessage.textContent = 'Profile updated successfully!';
+          document.querySelector('.profile-page').appendChild(successMessage);
+          
+          // Remove after 3 seconds
+          setTimeout(() => {
+            successMessage.remove();
+          }, 3000);
+          
       } catch (err) {
           setError(err.message || 'Failed to update profile.');
       } finally {
@@ -113,17 +201,46 @@ function ProfilePage() {
   };
 
   // Render Logic
-  if (loading) return <p>Loading profile...</p>;
-  if (error) return <p className="error-message container">Error: {error}</p>;
-  if (!profileData || !profileData.user) return <p className="container">User profile not found.</p>;
+  if (loading && !profileData) {
+    return (
+      <div className="loading-container container">
+        <div className="loading-spinner"></div>
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
+  
+  if (error && !profileData) {
+    return (
+      <div className="error-container container">
+        <div className="error-icon">⚠️</div>
+        <p className="error-message">{error}</p>
+        <Link to="/" className="back-link">Return to Home</Link>
+      </div>
+    );
+  }
+  
+  if (!profileData || !profileData.user) {
+    return (
+      <div className="not-found-container container">
+        <div className="not-found-icon">🔍</div>
+        <h2>User profile not found</h2>
+        <Link to="/" className="back-link">Return to Home</Link>
+      </div>
+    );
+  }
 
   const { user: profileUser, blogs } = profileData;
-  const profileImageUrl = profileUser.profilePic || 'https://via.placeholder.com/150?text=No+Image';
+  const profileImageUrl = profileUser.profilePic || defaultAvatar;
 
   return (
     <div className="profile-page container">
       <div className="profile-header">
-        <img src={profileImageUrl} alt={`${profileUser.username}'s profile`} className="profile-pic" />
+        <img 
+          src={imagePreview || profileImageUrl} 
+          alt={`${profileUser.username}'s profile`} 
+          className="profile-pic" 
+        />
         <div className="profile-info">
           <h1>{profileUser.username}</h1>
           <p className="profile-email">{profileUser.email}</p>
@@ -147,37 +264,101 @@ function ProfilePage() {
               <h3>Edit Your Profile</h3>
               {error && <p className="error-message">{error}</p>} 
               <div className="form-group">
-                  <label htmlFor="username">Username:</label>
-                  <input type="text" id="username" name="username" value={editFormData.username} onChange={handleInputChange} required />
+                  <label htmlFor="username" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Username:</label>
+                  <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    value={editFormData.username} 
+                    onChange={handleInputChange} 
+                    placeholder="Your username" 
+                    required 
+                    style={forcedInputStyle}
+                  />
               </div>
               <div className="form-group">
-                  <label htmlFor="email">Email:</label>
-                  <input type="email" id="email" name="email" value={editFormData.email} onChange={handleInputChange} required />
+                  <label htmlFor="email" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Email:</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    value={editFormData.email} 
+                    onChange={handleInputChange} 
+                    placeholder="Your email address" 
+                    required 
+                    style={forcedInputStyle}
+                  />
               </div>
               <div className="form-group">
-                  <label htmlFor="bio">Bio:</label>
-                  <textarea id="bio" name="bio" value={editFormData.bio} onChange={handleInputChange} rows="4"></textarea>
+                  <label htmlFor="bio" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Bio:</label>
+                  <textarea 
+                    id="bio" 
+                    name="bio" 
+                    value={editFormData.bio} 
+                    onChange={handleInputChange} 
+                    placeholder="Tell us about yourself" 
+                    rows="4"
+                    style={forcedInputStyle}
+                  ></textarea>
               </div>
               <div className="form-group">
-                  <label htmlFor="profilePic">Profile Picture:</label>
-                  <input type="file" id="profilePic" name="profilePic" accept="image/*" onChange={handleFileChange} />
+                  <label htmlFor="profilePic" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Profile Picture:</label>
+                  <input 
+                    type="file" 
+                    id="profilePic" 
+                    name="profilePic" 
+                    accept="image/*" 
+                    onChange={handleFileChange}
+                    style={{ color: isDarkMode ? '#ffffff' : 'inherit' }}
+                  />
+                  {imagePreview && (
+                    <div className="profile-pic-preview">
+                      <img src={imagePreview} alt="Profile preview" />
+                    </div>
+                  )}
               </div>
-              <h4>Social Links (Usernames/Handles)</h4>
+              <h4 style={{ color: isDarkMode ? '#ffffff' : '#333' }}>Social Links (Usernames/Handles)</h4>
                <div className="form-group">
-                  <label htmlFor="twitter">Twitter:</label>
-                  <input type="text" id="twitter" name="twitter" value={editFormData.twitter} onChange={handleInputChange} />
+                  <label htmlFor="twitter" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Twitter:</label>
+                  <input 
+                    type="text" 
+                    id="twitter" 
+                    name="twitter" 
+                    value={editFormData.twitter} 
+                    onChange={handleInputChange} 
+                    placeholder="Twitter username without @"
+                    style={forcedInputStyle}
+                  />
               </div>
                <div className="form-group">
-                  <label htmlFor="linkedin">LinkedIn:</label>
-                  <input type="text" id="linkedin" name="linkedin" value={editFormData.linkedin} onChange={handleInputChange} />
+                  <label htmlFor="linkedin" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>LinkedIn:</label>
+                  <input 
+                    type="text" 
+                    id="linkedin" 
+                    name="linkedin" 
+                    value={editFormData.linkedin} 
+                    onChange={handleInputChange} 
+                    placeholder="LinkedIn username"
+                    style={forcedInputStyle}
+                  />
               </div>
                <div className="form-group">
-                  <label htmlFor="github">GitHub:</label>
-                  <input type="text" id="github" name="github" value={editFormData.github} onChange={handleInputChange} />
+                  <label htmlFor="github" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>GitHub:</label>
+                  <input 
+                    type="text" 
+                    id="github" 
+                    name="github" 
+                    value={editFormData.github} 
+                    onChange={handleInputChange} 
+                    placeholder="GitHub username"
+                    style={forcedInputStyle}
+                  />
               </div>
 
-              <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</button>
-              <button type="button" onClick={handleEditToggle} disabled={loading} style={{ marginLeft: '10px', backgroundColor: 'grey', borderColor: 'grey' }}>Cancel</button>
+              <div className="form-actions">
+                  <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</button>
+                  <button type="button" onClick={handleEditToggle} disabled={loading}>Cancel</button>
+              </div>
           </form>
       )}
 
@@ -186,15 +367,19 @@ function ProfilePage() {
           <h2>{isOwnProfile ? 'Your' : `${profileUser.username}'s`} Blog Posts ({blogs?.length || 0})</h2>
            {blogs && blogs.length > 0 ? (
                <div className="blog-list-container"> {/* Reuse class from BlogListPage */} 
-                    {blogs.map(blog => (
-                        <PostCard key={blog._id} post={blog} />
-                    ))}
+                  {blogs.map(blog => (
+                      <PostCard key={blog._id} post={blog} />
+                  ))}
                </div>
            ) : (
-               <p>{isOwnProfile ? 'You haven\'t created any posts yet.' : 'This user hasn\'t created any posts yet.'}</p>
+               <div className="no-posts-message">
+                   <p>{isOwnProfile ? 'You haven\'t created any blog posts yet.' : `${profileUser.username} hasn't created any blog posts yet.`}</p>
+                   {isOwnProfile && (
+                       <Link to="/create-blog" className="create-post-link">Create Your First Post</Link>
+                   )}
+               </div>
            )}
       </div>
-
     </div>
   );
 }

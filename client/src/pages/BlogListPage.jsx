@@ -51,6 +51,12 @@ function BlogListPage() {
       setPage(prev => Math.min(prev + 1, totalPages));
   };
 
+  // Handle post deletion
+  const handlePostDelete = (deletedPostId) => {
+    // Remove the deleted post from state
+    setBlogs(currentBlogs => currentBlogs.filter(blog => blog._id !== deletedPostId));
+  };
+
   // TODO: Add UI elements for sorting, filtering, searching which update searchParams
 
   return (
@@ -64,7 +70,7 @@ function BlogListPage() {
       )}
       <div className="blog-list-container">
         {blogs.map(blog => (
-          <PostCard key={blog._id} post={blog} />
+          <PostCard key={blog._id} post={blog} onDelete={handlePostDelete} />
         ))}
       </div>
 

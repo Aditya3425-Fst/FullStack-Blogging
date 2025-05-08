@@ -89,7 +89,6 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
-
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -102,3 +101,4 @@ h1 {
     background-color: #f9f9f9;
   }
 }
+

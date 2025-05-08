@@ -13,11 +13,13 @@ import EditBlogPage from './pages/EditBlogPage'; // Import EditBlogPage
 import ProfilePage from './pages/ProfilePage'; // Create this page later
 import AdminDashboardPage from './pages/AdminDashboardPage'; // Create this page later
 import NotFoundPage from './pages/NotFoundPage'; // Import 404 page
+import TechBlogsPage from './pages/TechBlogsPage'; // Import TechBlogsPage
 
 // Import Components
 import Navbar from './components/Navbar'; // Create this component later
 import Footer from './components/Footer'; // Import Footer
 import ProtectedRoute from './components/ProtectedRoute'; // Create this component later
+import './App.css';
 
 function App() {
   const { loading } = useAuth();
@@ -29,7 +31,7 @@ function App() {
   return (
     <div className="App">
       <Navbar /> {/* Display Navbar on all pages */} 
-      <main style={{ padding: '20px', minHeight: 'calc(100vh - 120px)' }}> {/* Adjust padding/minHeight as needed */} 
+      <main className="main-content"> 
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
@@ -38,6 +40,7 @@ function App() {
           <Route path="/blogs" element={<BlogListPage />} />
           <Route path="/blog/:id" element={<BlogDetailsPage />} />
           <Route path="/profile/:userId" element={<ProfilePage />} /> {/* Public profile view */}
+          <Route path="/tech-blogs" element={<TechBlogsPage />} /> {/* Technology blogs page */}
 
           {/* Protected Routes */}
           <Route path="/create-blog" element={
@@ -69,7 +72,7 @@ function App() {
         </Routes>
       </main>
       <Footer /> {/* Add Footer */} 
-    </div>
+      </div>
   );
 }
 

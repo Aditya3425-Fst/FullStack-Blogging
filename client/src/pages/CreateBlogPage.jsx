@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../api/blog';
 import { getAllCategories } from '../api/category';
-import './CreateBlogPage.css'; // Create later
+import './CreateBlogPage.css';
 
 function CreateBlogPage() {
   const [title, setTitle] = useState('');
@@ -10,7 +10,9 @@ function CreateBlogPage() {
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState(''); // Comma-separated string
   const [coverImage, setCoverImage] = useState(null); // File object
+  const [imagePreview, setImagePreview] = useState(null); // For displaying image preview
   const [status, setStatus] = useState('draft'); // Default to draft
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -18,6 +20,41 @@ function CreateBlogPage() {
   const [categoryLoading, setCategoryLoading] = useState(true);
 
   const navigate = useNavigate();
+
+  // Check for dark mode on mount and when body class changes
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDark = document.body.classList.contains('dark-mode');
+      setIsDarkMode(isDark);
+      
+      // Apply emergency styles to all form inputs
+      if (isDark) {
+        const formInputs = document.querySelectorAll('.create-blog-page input, .create-blog-page textarea, .create-blog-page select');
+        formInputs.forEach(input => {
+          input.style.backgroundColor = '#2c2c2c';
+          input.style.color = '#ffffff';
+          input.style.borderColor = '#444';
+        });
+      }
+    };
+    
+    // Check on mount
+    checkDarkMode();
+    
+    // Set up observer for changes to body class
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
+
+  // Very strong inline styles that will override anything
+  const forcedInputStyle = {
+    backgroundColor: isDarkMode ? '#2c2c2c' : '#ffffff',
+    color: isDarkMode ? '#ffffff' : '#333333',
+    borderColor: isDarkMode ? '#444' : '#ddd',
+    caretColor: isDarkMode ? '#ffffff' : 'auto'
+  };
 
   // Fetch categories for dropdown
   useEffect(() => {
@@ -41,7 +78,15 @@ function CreateBlogPage() {
 
   const handleImageChange = (e) => {
       if (e.target.files && e.target.files[0]) {
-        setCoverImage(e.target.files[0]);
+        const file = e.target.files[0];
+        setCoverImage(file);
+        
+        // Create preview URL for the selected image
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
       }
   };
 
@@ -81,6 +126,30 @@ function CreateBlogPage() {
     }
   };
 
+  // Add emergency fix styles to head
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .dark-mode .create-blog-page input, 
+      .dark-mode .create-blog-page textarea, 
+      .dark-mode .create-blog-page select {
+        background-color: #2c2c2c !important;
+        color: #ffffff !important;
+        border-color: #444 !important;
+        caret-color: #ffffff !important;
+      }
+      
+      .dark-mode .create-blog-page .form-group label {
+        color: #ffffff !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <div className="create-blog-page container">
       <h2>Create New Blog Post</h2>
@@ -88,42 +157,48 @@ function CreateBlogPage() {
         {error && <p className="error-message">{error}</p>}
         
         <div className="form-group">
-          <label htmlFor="title">Title:</label>
+          <label htmlFor="title" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Title</label>
           <input
             type="text"
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter an engaging title"
             required
+            style={forcedInputStyle}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="content">Content:</label>
-          {/* Consider using a Rich Text Editor component here later */}
+          <label htmlFor="content" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Content</label>
           <textarea
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={15}
+            placeholder="Write your blog content here (Markdown supported)"
             required
+            style={forcedInputStyle}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="category">Category:</label>
+          <label htmlFor="category" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Category</label>
           <select 
             id="category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             required
             disabled={categoryLoading}
+            style={forcedInputStyle}
           >
             {categoryLoading ? (
-                <option>Loading categories...</option>
+                <option className="category-loading">Loading categories...</option>
             ) : categories.length > 0 ? (
                 categories.map(cat => (
-                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                    <option key={cat._id} value={cat._id} style={{ color: isDarkMode ? '#ffffff' : '#333' }}>
+                      {cat.name}
+                    </option>
                 ))
             ) : (
                 <option value="">No categories found</option> // Handle case with no categories
@@ -131,42 +206,68 @@ function CreateBlogPage() {
           </select>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="tags">Tags (comma-separated):</label>
+        <div className="form-group tags-field">
+          <label htmlFor="tags" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Tags</label>
           <input
             type="text"
             id="tags"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             placeholder="e.g., react, javascript, webdev"
+            style={forcedInputStyle}
           />
+          <span className="tags-helper" style={{ color: isDarkMode ? '#dddddd' : '#6c757d' }}>Separate with commas</span>
         </div>
 
-         <div className="form-group">
-          <label htmlFor="coverImage">Cover Image:</label>
+        <div className="form-group">
+          <label htmlFor="coverImage" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Cover Image</label>
           <input
             type="file"
             id="coverImage"
             accept="image/*" // Accept only image files
             onChange={handleImageChange}
+            style={{ color: isDarkMode ? '#ffffff' : 'inherit' }}
           />
-          {/* Optional: Show preview of selected image */} 
+          {imagePreview && (
+            <div className="image-preview">
+              <img src={imagePreview} alt="Cover preview" />
+            </div>
+          )}
         </div>
 
         <div className="form-group">
-            <label htmlFor="status">Status:</label>
-            <select 
-                id="status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                required
+          <label htmlFor="status" style={{ color: isDarkMode ? '#ffffff' : '#444' }}>Status</label>
+          <div className="status-options">
+            <div 
+              className={`status-option draft ${status === 'draft' ? 'active' : ''}`}
+              onClick={() => setStatus('draft')}
+              style={{
+                color: isDarkMode ? '#ffffff' : 'inherit',
+                backgroundColor: isDarkMode ? '#2c2c2c' : 'inherit',
+                borderColor: isDarkMode ? '#444' : 'inherit'
+              }}
             >
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-            </select>
+              Draft
+            </div>
+            <div 
+              className={`status-option published ${status === 'published' ? 'active' : ''}`}
+              onClick={() => setStatus('published')}
+              style={{
+                color: isDarkMode ? '#ffffff' : 'inherit',
+                backgroundColor: isDarkMode ? '#2c2c2c' : 'inherit',
+                borderColor: isDarkMode ? '#444' : 'inherit'
+              }}
+            >
+              Published
+            </div>
+          </div>
         </div>
 
-        <button type="submit" disabled={loading || categoryLoading}>
+        <button 
+          type="submit" 
+          className="submit-button" 
+          disabled={loading || categoryLoading}
+        >
           {loading ? 'Creating Post...' : 'Create Post'}
         </button>
       </form>

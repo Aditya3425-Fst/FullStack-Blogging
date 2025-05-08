@@ -18,7 +18,7 @@ A complete full-stack blogging platform with modern UI, comprehensive user manag
 - View all blogs with pagination
 - Read individual blog posts with full content
 - Update blogs (author/admin only)
-- Delete blogs (author/admin only)
+- Delete blogs (author/admin only) with one-click delete functionality
 - Draft saving functionality
 
 ### 🏷️ Categories & Tags
@@ -62,7 +62,31 @@ A complete full-stack blogging platform with modern UI, comprehensive user manag
 - Mobile-first approach
 - Fully responsive on all devices
 - Modern UI with animations
-- Dark/light mode toggle
+- Dark/light mode toggle with persistent preference storage
+- Optimized form visibility in dark mode
+
+## 🆕 Recent Updates
+
+### Dark Mode Enhancement
+- **Complete Theme System**: Implemented a comprehensive dark/light mode system using React Context API
+- **Local Storage Persistence**: User theme preferences are saved and persist between sessions
+- **Automatic System Detection**: Detects and applies the user's system theme preference by default
+- **Enhanced Form Visibility**: Fixed text visibility issues in form fields when in dark mode
+- **Component-Level Dark Styling**: Added dedicated dark mode styles for all components
+
+### User Experience Improvements
+- **One-Click Blog Post Deletion**: Added delete buttons directly on blog cards for instant removal
+- **Delete Confirmation**: Implemented confirmation dialogs to prevent accidental deletions
+- **Post Author Recognition**: Delete buttons only appear for post authors and administrators
+- **Profile Editing Enhancement**: Improved profile form with better styling and visibility in dark mode
+- **Input Field Visibility Fix**: Solved the issue with text not being visible in dark mode forms
+
+### UI Refinements
+- **Gradient Backgrounds**: Enhanced profile pages with modern gradient backgrounds
+- **Interactive Social Media Links**: Improved styling for social media links with hover effects
+- **Avatar Fallbacks**: Added SVG-based fallback avatars when user images aren't available
+- **Error State Visualization**: Better error states and notifications throughout the application
+- **Form Field Enhancements**: Improved styling and interaction states for all form elements
 
 ## 💻 Tech Stack
 
@@ -136,7 +160,8 @@ client/
 │   │   ├── layout/     # Layout components
 │   │   └── ui/         # UI elements
 │   ├── context/        # React context
-│   │   └── AuthContext.js
+│   │   ├── AuthContext.js  # Authentication context
+│   │   └── ThemeContext.js # Dark/Light mode context
 │   ├── hooks/          # Custom hooks
 │   │   ├── useAuth.js
 │   │   └── useBlog.js
@@ -209,6 +234,17 @@ client/
    ```bash
    npm start
    ```
+
+## 🌑 Dark Mode Implementation
+
+The application features a complete dark mode implementation:
+
+- **Theme Toggle:** Easily switch between light and dark modes via the toggle button in the navbar
+- **Theme Persistence:** User theme preference is saved to localStorage and persists across sessions
+- **System Preference Detection:** Automatically detects and applies the user's system color scheme preference
+- **Component-Level Styling:** Each component has dedicated dark mode styles for consistent appearance
+- **Form Visibility Enhancement:** Special handling for form inputs to ensure text is visible in dark mode
+- **Smooth Transitions:** Animation between themes for a polished user experience
 
 ## 🌐 Deployment
 

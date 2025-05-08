@@ -128,26 +128,31 @@ exports.getAllBlogs = async (req, res, next) => {
 // @access  Public
 exports.getBlogById = async (req, res, next) => {
     try {
+        console.log(`--- Getting blog by ID: ${req.params.id} ---`);
         const blog = await Blog.findById(req.params.id)
-                               .populate('author', 'username email profilePic bio socialLinks')
+                               .populate('author', 'username email profilePic bio socialLinks role') // Ensure role is populated for author
                                .populate('category', 'name');
         
+        console.log('--- Fetched Blog Data: ---', blog ? { _id: blog._id, status: blog.status, authorId: blog.author?._id } : null);
+        console.log('--- Request User Data (from protect middleware): ---', req.user ? { id: req.user.id, role: req.user.role } : null);
+
         if (!blog) {
-            // If blog doesn't exist at all, always 404
             return res.status(404).json({ message: 'Blog post not found' });
         }
 
-        // Check if published OR if the viewer is the author or an admin
+        // Check authorization conditions
         const isPublished = blog.status === 'published';
         const isAuthor = req.user && blog.author && req.user.id === blog.author._id.toString();
         const isAdmin = req.user && req.user.role === 'admin';
+        
+        console.log(`--- Authorization Check: isPublished=${isPublished}, isAuthor=${isAuthor}, isAdmin=${isAdmin} ---`);
 
         if (!isPublished && !isAuthor && !isAdmin) {
-            // Not published, and the viewer is not the author or an admin
+            console.log('--- Authorization FAILED ---');
             return res.status(404).json({ message: 'Blog post not found or not published' });
         }
         
-        // If we reach here, the blog exists and the user is authorized to view it
+        console.log('--- Authorization PASSED ---');
         res.status(200).json(blog);
 
     } catch (error) {

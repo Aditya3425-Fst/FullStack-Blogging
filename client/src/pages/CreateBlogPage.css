@@ -1,67 +1,228 @@
 /* client/src/pages/CreateBlogPage.css */
 .create-blog-page {
-    max-width: 800px;
-    /* Uses .container class for centering/padding */
+    max-width: 900px;
+    margin: 120px auto 40px;
     background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
 
 .create-blog-page h2 {
     text-align: center;
     margin-bottom: 30px;
+    color: #333;
+    font-size: 2.5rem;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.create-blog-page h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #007bff, #00c6ff);
+    border-radius: 2px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 28px;
+    position: relative;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #444;
+    font-size: 1.05rem;
+    transition: all 0.3s;
 }
 
 .form-group input[type="text"],
 .form-group textarea,
 .form-group select {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; /* Include padding and border in element's total width/height */
+    padding: 14px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
     font-size: 1rem;
+    background-color: #fafafa;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #007bff;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
 .form-group input[type="file"] {
-    padding: 10px 0;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-group input[type="file"]:hover {
+    background-color: #e9ecef;
 }
 
 .form-group textarea {
-    resize: vertical; /* Allow vertical resize */
-    min-height: 150px;
+    resize: vertical;
+    min-height: 200px;
+    line-height: 1.6;
+}
+
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+    padding-right: 40px;
 }
 
 .form-group select:disabled {
     background-color: #e9ecef;
     cursor: not-allowed;
+    opacity: 0.8;
 }
 
-.create-blog-page button[type="submit"] {
+/* Tag field styling with helper text */
+.tags-field {
+    position: relative;
+}
+
+.tags-helper {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 0.75rem;
+    color: #6c757d;
+    background: rgba(255,255,255,0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Upload file preview */
+.image-preview {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* Category loading indicator */
+.category-loading {
+    font-style: italic;
+    color: #6c757d;
+}
+
+/* Status selection with visual indicators */
+.status-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.status-option {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.status-option.active {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.08);
+    font-weight: 600;
+}
+
+.status-option.draft {
+    border-left: 4px solid #ffc107;
+}
+
+.status-option.published {
+    border-left: 4px solid #28a745;
+}
+
+/* Submit button styling */
+.submit-button {
     display: block;
     width: 100%;
-    padding: 12px;
+    padding: 16px;
     font-size: 1.1rem;
-    margin-top: 20px;
+    font-weight: 600;
+    margin-top: 30px;
+    background: linear-gradient(to right, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
+}
+
+.submit-button:hover {
+    background: linear-gradient(to right, #0062cc, #004494);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.35);
+}
+
+.submit-button:disabled {
+    background: linear-gradient(to right, #6c757d, #495057);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .error-message {
     color: #dc3545;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
     text-align: center;
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .create-blog-page {
+        padding: 25px;
+        margin: 20px auto;
+    }
+    
+    .create-blog-page h2 {
+        font-size: 2rem;
+    }
+    
+    .status-options {
+        flex-direction: column;
+        gap: 10px;
+    }
 } 
