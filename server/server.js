@@ -63,12 +63,10 @@ app.use('/api/users', userRoutes);
 // SERVE FRONTEND IN PRODUCTION (VERY IMPORTANT)
 // -----------------------
 if (process.env.NODE_ENV === 'production') {
-  const buildPath = path.join(dirname, '../client/dist');
-
-  app.use(express.static(buildPath));
+  app.use(express.static(path.join(dirname, 'client', 'dist')));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
+    res.sendFile(path.join(dirname, 'client', 'dist', 'index.html'));
   });
 }
 
