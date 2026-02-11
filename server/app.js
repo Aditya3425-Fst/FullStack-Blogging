@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { errorHandler, notFound } = require('./middlewares/errorMiddleware'); // Import error handlers
-
+const path = require('path');
 const app = express();
 
 // Explicit CORS Options
@@ -39,9 +39,17 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/users', userRoutes);
 // TODO: Mount other routes
 
+const dirname = path.resolve();
 // --- Error Handling Middlewares ---
 // Must be after all routes
 app.use(notFound);
 app.use(errorHandler);
 
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(dirname, "../client/dist")));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(dirname, "../client/dist/index.html"));
+  });
+}
 module.exports = app;

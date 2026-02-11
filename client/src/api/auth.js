@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'; // Changed port to 5001
+const API_URL = import.meta.env.MODE === "development" ? 'http://localhost:5001/api' :"/api"; // Changed port to 5001
 
 const authApi = axios.create({
   baseURL: `${API_URL}/auth`,
