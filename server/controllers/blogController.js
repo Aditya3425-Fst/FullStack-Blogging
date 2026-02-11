@@ -3,11 +3,9 @@ const User = require('../models/User'); // Needed potentially for author checks
 const Category = require('../models/Category'); // Needed potentially for category validation
 const upload = require('../config/cloudinary'); // Import upload middleware
 
-// @desc    Create a new blog post
-// @route   POST /api/blogs
-// @access  Private (Requires Authentication)
+
 exports.createBlog = async (req, res, next) => {
-    // TODO: Add input validation
+   
     try {
         const { title, content, category, tags, status } = req.body;
         const author = req.user.id; 
@@ -123,9 +121,7 @@ exports.getAllBlogs = async (req, res, next) => {
     }
 };
 
-// @desc    Get a single blog post by ID
-// @route   GET /api/blogs/:id
-// @access  Public
+
 exports.getBlogById = async (req, res, next) => {
     try {
         console.log(`--- Getting blog by ID: ${req.params.id} ---`);

@@ -2,9 +2,7 @@ const User = require('../models/User');
 const Blog = require('../models/Blog'); // To fetch user's blogs
 const upload = require('../config/cloudinary'); // Import upload middleware
 
-// @desc    Get user profile
-// @route   GET /api/users/profile/:userId  (or /api/users/profile/me for logged in user)
-// @access  Public (or Private for /me)
+
 exports.getUserProfile = async (req, res, next) => {
     try {
         // Fetch user by ID from params
@@ -31,9 +29,7 @@ exports.getUserProfile = async (req, res, next) => {
     }
 };
 
-// @desc    Get logged-in user's profile
-// @route   GET /api/users/me
-// @access  Private
+
 exports.getMyProfile = async (req, res, next) => {
     try {
         // req.user is available from protect middleware
@@ -56,9 +52,7 @@ exports.getMyProfile = async (req, res, next) => {
     }
 };
 
-// @desc    Update logged-in user's profile
-// @route   PUT /api/users/me
-// @access  Private
+
 exports.updateMyProfile = async (req, res, next) => {
     try {
         const userId = req.user.id;
@@ -120,9 +114,7 @@ exports.updateMyProfile = async (req, res, next) => {
 
 // --- ADMIN ONLY --- 
 
-// @desc    Get all users
-// @route   GET /api/users
-// @access  Private (Admin)
+
 exports.getAllUsers = async (req, res, next) => {
     try {
         // TODO: Add pagination
@@ -135,9 +127,7 @@ exports.getAllUsers = async (req, res, next) => {
     }
 };
 
-// @desc    Get user by ID (Admin)
-// @route   GET /api/users/:id
-// @access  Private (Admin)
+
 exports.getUserByIdAdmin = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id).select('-password');
@@ -156,9 +146,6 @@ exports.getUserByIdAdmin = async (req, res, next) => {
     }
 };
 
-// @desc    Update user (Admin)
-// @route   PUT /api/users/:id
-// @access  Private (Admin)
 exports.updateUserAdmin = async (req, res, next) => {
     try {
         const userId = req.params.id;
@@ -195,9 +182,7 @@ exports.updateUserAdmin = async (req, res, next) => {
     }
 };
 
-// @desc    Delete user (Admin)
-// @route   DELETE /api/users/:id
-// @access  Private (Admin)
+
 exports.deleteUserAdmin = async (req, res, next) => {
     // TODO: Decide what to do with user's content (blogs, comments) - reassign, delete, anonymize?
     try {

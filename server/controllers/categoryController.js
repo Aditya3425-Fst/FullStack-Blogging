@@ -1,8 +1,6 @@
 const Category = require('../models/Category');
 
-// @desc    Create a new category
-// @route   POST /api/categories
-// @access  Private (Admin only)
+
 exports.createCategory = async (req, res, next) => {
     try {
         const { name, description } = req.body;
@@ -26,9 +24,7 @@ exports.createCategory = async (req, res, next) => {
     }
 };
 
-// @desc    Get all categories
-// @route   GET /api/categories
-// @access  Public
+
 exports.getAllCategories = async (req, res, next) => {
     try {
         // --- Temporary Default Category Creation (for Development) ---
@@ -55,9 +51,7 @@ exports.getAllCategories = async (req, res, next) => {
     }
 };
 
-// @desc    Get a single category by ID
-// @route   GET /api/categories/:id
-// @access  Public
+
 exports.getCategoryById = async (req, res, next) => {
     try {
         const category = await Category.findById(req.params.id);
@@ -75,9 +69,7 @@ exports.getCategoryById = async (req, res, next) => {
     }
 };
 
-// @desc    Update a category
-// @route   PUT /api/categories/:id
-// @access  Private (Admin only)
+
 exports.updateCategory = async (req, res, next) => {
     try {
         const { name, description } = req.body;
@@ -120,9 +112,7 @@ exports.updateCategory = async (req, res, next) => {
     }
 };
 
-// @desc    Delete a category
-// @route   DELETE /api/categories/:id
-// @access  Private (Admin only)
+
 exports.deleteCategory = async (req, res, next) => {
     // TODO: Decide how to handle blogs associated with this category (e.g., prevent deletion, set category to null, reassign to 'Uncategorized')
     try {

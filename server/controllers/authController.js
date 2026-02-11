@@ -1,9 +1,7 @@
 const User = require('../models/User');
 const generateToken = require('../utils/tokenUtils');
 
-// @desc    Register a new user
-// @route   POST /api/auth/signup
-// @access  Public
+
 exports.signup = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -43,9 +41,7 @@ exports.signup = async (req, res, next) => {
   }
 };
 
-// @desc    Authenticate user & get token
-// @route   POST /api/auth/login
-// @access  Public
+
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;

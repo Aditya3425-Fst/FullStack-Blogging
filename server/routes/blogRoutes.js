@@ -12,7 +12,7 @@ const { protect, authorize } = require('../middlewares/authMiddleware'); // Impo
 const { addComment, getCommentsForBlog } = require('../controllers/commentController'); // Import comment controllers
 const upload = require('../config/cloudinary'); // Import upload middleware
 
-// TODO: Import authentication middleware (e.g., protect, authorize)
+
 
 const router = express.Router();
 

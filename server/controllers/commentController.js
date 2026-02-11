@@ -2,9 +2,7 @@ const Comment = require('../models/Comment');
 const Blog = require('../models/Blog');
 const User = require('../models/User'); // For author population
 
-// @desc    Add a comment to a blog post
-// @route   POST /api/blogs/:blogId/comments
-// @access  Private (Requires Authentication)
+
 exports.addComment = async (req, res, next) => {
     try {
         const { text } = req.body;
@@ -34,9 +32,7 @@ exports.addComment = async (req, res, next) => {
     }
 };
 
-// @desc    Get all comments for a blog post
-// @route   GET /api/blogs/:blogId/comments
-// @access  Public
+
 exports.getCommentsForBlog = async (req, res, next) => {
     try {
         const blogId = req.params.blogId;
@@ -59,9 +55,7 @@ exports.getCommentsForBlog = async (req, res, next) => {
     }
 };
 
-// @desc    Delete a comment
-// @route   DELETE /api/comments/:commentId 
-// @access  Private (Comment Author or Admin)
+
 exports.deleteComment = async (req, res, next) => {
     try {
         const commentId = req.params.commentId;
@@ -92,5 +86,3 @@ exports.deleteComment = async (req, res, next) => {
     }
 };
 
-// TODO: Implement Update Comment functionality (PUT /api/comments/:commentId)
-// exports.updateComment = async (req, res, next) => { ... }; 
