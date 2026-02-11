@@ -1,3 +1,5 @@
+const path = require("path");
+
 require('dotenv').config();
 console.log('--- Dotenv loaded. process.env contents (partial): ---');
 console.log({ 
@@ -6,6 +8,7 @@ console.log({
   MONGO_URI_LOADED: !!process.env.MONGO_URI 
 });
 console.log('--------------------------------------------------');
+const dirname = path.resolve();
 
 const app = require('./app');
 const mongoose = require('mongoose');
@@ -20,7 +23,13 @@ if (!MONGO_URI) {
   console.error('FATAL ERROR: MONGO_URI is not defined.');
   process.exit(1);
 }
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(dirname, "../client/dist")));
 
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(dirname, "../client/dist/index.html"));
+  });
+}
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB');
