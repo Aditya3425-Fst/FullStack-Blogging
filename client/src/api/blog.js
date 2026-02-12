@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.MODE === "development" ? 'http://localhost:5001/api' :"/api";;
+const API_URL = import.meta.env.MODE === "development" ? 'http://localhost:5001/api' :"/api";
 
 // Create an Axios instance for blog API
 const blogApi = axios.create({
